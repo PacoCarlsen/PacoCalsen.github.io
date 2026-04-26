@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二战冷门硬核知识测试 | 全段位人格</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{
+            --war-black:#0a0a0a;
+            --war-dark:#121212;
+            --war-red:#9b1c1c;
+            --war-gray:#333333;
+            --war-light:#b8b8b8;
+            --war-gold:#b89858;
+        }
+        body{
+            background-color:var(--war-black);
+            color:#eee;
+            font-family:"Microsoft Yahei",sans-serif;
+            background-color:#050505;
+        }
+        .loading{
+            position:fixed;
+            top:0;left:0;
+            width:100%;height:100%;
+            background:#000;
+            z-index:999;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-direction:column;
+            transition:opacity 0.6s ease;
+        }
+        .loading-text{
+            color:var(--war-red);
+            font-size:20px;
+            letter-spacing:4px;
+            margin-top:20px;
+        }
+        .loading.hide{opacity:0;pointer-events:none;}
+        .container{
+            max-width:1000px;
+            margin:0 auto;
+            padding:30px 20px;
+        }
+        h1{
+            text-align:center;
+            color:var(--war-red);
+            font-size:32px;
+            letter-spacing:3px;
+            margin-bottom:10px;
+        }
+        .sub-title{
+            text-align:center;
+            color:var(--war-light);
+            margin-bottom:40px;
+        }
+        .q-item{
+            background:rgba(20,20,20,0.9);
+            border:1px solid var(--war-gray);
+            padding:20px;
+            margin-bottom:16px;
+            border-radius:12px;
+            transition:0.3s;
+        }
+        .q-item:hover{
+            border-color:var(--war-red);
+            box-shadow:0 0 12px #6b121244;
+        }
+        .q-title{
+            font-size:16px;
+            margin-bottom:12px;
+            line-height:1.7;
+        }
+        .opt{
+            margin:8px 0;
+            padding:6px;
+            border-radius:4px;
+            cursor:pointer;
+        }
+        .opt:hover{
+            background:#222;
+        }
+        .btn-group{
+            display:flex;
+            gap:20px;
+            justify-content:center;
+            flex-wrap:wrap;
+            margin:40px 0;
+        }
+        button{
+            width:220px;
+            height:52px;
+            background:linear-gradient(135deg,#9b1c1c,#6b1212);
+            border:none;
+            color:#fff;
+            font-size:17px;
+            border-radius:8px;
+            cursor:pointer;
+            letter-spacing:2px;
+            transition:0.3s;
+        }
+        button.reset{
+            background:linear-gradient(135deg,#333,#222);
+        }
+        button:hover{
+            transform:scale(1.03);
+            box-shadow:0 0 15px #9b1c1c66;
+        }
+        .result-box{
+            display:none;
+            background:rgba(10,10,10,0.95);
+            border:1px solid var(--war-red);
+            padding:40px 30px;
+            border-radius:16px;
+            text-align:center;
+            margin-top:30px;
+        }
+        .score-title{
+            font-size:28px;
+            color:var(--war-gold);
+        }
+        .avatar-cover{
+            width:260px;
+            height:340px;
+            margin:20px auto;
+            border-radius:12px;
+            overflow:hidden;
+            border:2px solid var(--war-gold);
+            background:#111;
+        }
+        .avatar-cover img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        .char-name{
+            font-size:24px;
+            color:var(--war-red);
+            margin:10px 0;
+            font-weight:bold;
+        }
+        .quote-it{
+            font-style:italic;
+            color:#aaa;
+            line-height:2;
+            margin:15px 0;
+        }
+        .error-wrap{
+            margin-top:40px;
+            text-align:left;
+            border-top:1px solid #333;
+            padding-top:30px;
+        }
+        .error-title{
+            font-size:22px;
+            color:var(--war-gold);
+            margin-bottom:20px;
+        }
+        .error-item{
+            background:#181818;
+            padding:16px;
+            border-radius:8px;
+            margin-bottom:12px;
+            border-left:3px solid var(--war-red);
+        }
+        .ans-right{color:#4ade80;}
+        .ans-wrong{color:#f87171;}
+        .explain{
+            margin-top:8px;
+            color:#ccc;
+            font-size:14px;
+            line-height:1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <svg width="60" height="60" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="45" fill="none" stroke="#9b1c1c" stroke-width="4" stroke-dasharray="70 200"></circle>
+        </svg>
+        <div class="loading-text">载入二战档案</div>
+    </div>
+
+    <div class="container">
+        <h1>二战硬核冷门知识测评</h1>
+        <p class="sub-title">战役代号｜将领秘史｜密约会议｜部队编制｜战术决胜</p>
+        <div id="quiz"></div>
+
+        <div class="btn-group">
+            <button onclick="getScore()">提交答卷</button>
+            <button class="reset" onclick="resetAll()">重新答题</button>
+        </div>
+
+        <div class="result-box" id="result">
+            <h2 class="score-title">最终得分：<span id="scoreNum">0</span> / 100</h2>
+            <div class="avatar-cover" id="avatarBox"></div>
+            <div class="char-name" id="charName"></div>
+            <div id="charQuote"></div>
+
+            <div class="error-wrap" id="errorWrap">
+                <h3 class="error-title">📜 错题复盘 &amp; 历史解析</h3>
+                <div id="errorList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 20道冷门二战题+解析
+        const questions = [
+            {q:"1. 德军「水星行动」代号对应的战役是？",opt:["A.克里米亚战役","B.克里特岛空降战役","C.马耳他攻防战","D.塞瓦斯托波尔围城战"],ans:"B",desc:"水星行动为1941德军大规模空降克里特岛，是二战空降作战标志性战役。"},
+            {q:"2. 苏德《莫洛托夫-里宾特洛甫条约》核心秘密内容？",opt:["A.瓜分东欧势力范围","B.联合对英宣战","C.共享核武器技术","D.远东军事同盟"],ans:"A",desc:"秘密条款划分波兰、波罗的海国家势力范围，直接诱发二战爆发。"},
+            {q:"3. 北非德军「向日葵行动」的目的？",opt:["A.战略撤退","B.增援隆美尔北非军团","C.攻占埃及","D.封锁苏伊士"],ans:"B",desc:"1941德军增援北非，扭转意军溃败局面，开启北非拉锯战。"},
+            {q:"4. 德黑兰会议核心决议？",opt:["A.开辟欧洲第二战场","B.瓜分德国","C.对日投降谈判","D.解散轴心国"],ans:"A",desc:"三巨头敲定诺曼底登陆，使德国陷入东西双线作战。"},
+            {q:"5. 日军一号作战在中国又称？",opt:["A.淞沪会战","B.豫湘桂会战","C.徐州会战","D.百团大战"],ans:"B",desc:"1944日军最后一次大规模战略进攻，打通大陆交通线。"},
+            {q:"6. 隆美尔最终结局？",opt:["A.战场战死","B.被迫服毒自尽","C.被俘处决","D.正常退役"],ans:"B",desc:"卷入刺杀希特勒事件，被勒令自杀，纳粹对外宣称战死。"},
+            {q:"7. 盟军霸王行动指？",opt:["A.西西里登陆","B.诺曼底登陆","C.安齐奥登陆","D.仁川登陆"],ans:"B",desc:"人类史上最大规模两栖登陆，西欧反攻起点。"},
+            {q:"8. 芬兰与苏联1939冲突名为？",opt:["A.冬季战争","B.继续战争","C.冻土会战","D.北欧战役"],ans:"A",desc:"芬兰以弱抗强，依托工事重创苏军。"},
+            {q:"9. 德军台风行动主攻目标？",opt:["A.列宁格勒","B.莫斯科","C.斯大林格勒","D.基辅"],ans:"B",desc:"1941东线终极突击，莫斯科保卫战核心阶段。"},
+            {q:"10.意大利1943投降导火索？",opt:["A.墨索里尼倒台被捕","B.罗马失守","C.北非全军覆没","D.本土大轰炸"],ans:"A",desc:"法西斯党垮台，意大利退出轴心国阵营。"},
+            {q:"11.苏军十次突击发生在哪一年？",opt:["A.1942","B.1944","C.1941","D.1945"],ans:"B",desc:"1944全线战略反攻，收复苏联全境攻入东欧。"},
+            {q:"12.德军狼群战术依靠？",opt:["A.重型坦克","B.U型潜艇","C.俯冲轰炸机","D.山地部队"],ans:"C",desc:"邓尼茨潜艇集群战术，封锁英国海上补给。"},
+            {q:"13.雅尔塔协定不含哪项？",opt:["A.外蒙现状化","B.租借旅顺","C.瓜分日本本土","D.库页岛收回"],ans:"C",desc:"战后日本由美国单独占领，无瓜分条款。"},
+            {q:"14.马来亚英军惨败核心原因？",opt:["A.日军丛林迂回穿插","B.装备落后","C.无海军支援","D.士气崩溃"],ans:"A",desc:"日军放弃正面登陆，穿越丛林包抄合围。"},
+            {q:"15.德军第7空降师绰号？",opt:["A.雪绒花","B.绿魔鬼","C.骷髅师","D.帝国师"],ans:"B",desc:"精锐空降部队，被盟军称作绿魔鬼。"},
+            {q:"16.白色方案是德军？",opt:["A.入侵波兰","B.入侵法国","C.入侵苏联","D.吞并捷克"],ans:"A",desc:"1939执行，二战欧洲战场正式爆发。"},
+            {q:"17.瓜岛战役美军制胜关键？",opt:["A.切断日军补给","B.航母决战","C.毒气作战","D.原子弹"],ans:"A",desc:"长期海上封锁，日军饥荒崩溃撤退。"},
+            {q:"18.匈牙利箭十字党属于？",opt:["A.亲德右翼独裁势力","B.反法西斯组织","C.共产党","D.中立和平派"],ans:"A",desc:"纳粹傀儡极端政权，迫害犹太人。"},
+            {q:"19.1940法国投降傀儡政权？",opt:["A.维希法国","B.自由法国","C.法兰西公社","D.临时政府"],ans:"A",desc:"贝当组建亲德政权，戴高乐为自由法国。"},
+            {q:"20.德军巴尔干速胜战术？",opt:["A.空降+装甲穿插","B.长期围城","C.化学武器","D.外交收买"],ans:"B",desc:"伞兵斩首+装甲高速突击，快速横扫南斯拉夫、希腊。"}
+        ];
+
+        // 【超全扩充段位｜图片全部稳定可用｜专属语录】
+        const rankList = [
+            {min:0,max:15,name:"平民百姓｜时代尘埃",img:"https://gss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/9f2f070828381f307f9f2f0f0d03087fb8656999.jpg",word:"战争从不是伟人的博弈，而是普通人的炼狱。"},
+            {min:20,max:30,name:"二线征召兵｜懵懂入伍",img:"https://gss0.baidu.com/94o3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/8d1001e93901213f9d7c2d2d5c0255bb51fd3f9c.jpg",word:"不懂战略，不知对错，只被迫卷入洪流。"},
+            {min:35,max:45,name:"意大利普通士兵｜摇摆轴心",img:"https://pic.qqtn.com/up/2021-2/16128372238447447.jpg",word:"无心征战，被动捆绑在法西斯的战车上。"},
+            {min:50,max:60,name:"昭和日军下层军官｜狂热盲从",img:"https://pic.qqtn.com/up/2020-11/16055892838137222.jpg",word:"狭隘的民族狂热，终将埋葬整个帝国。"},
+            {min:65,max:70,name:"墨索里尼｜意大利独裁者",img:"https://pic.qqtn.com/up/2022-3/16473567938687330.jpg",word:`<div class="quote-it">In tempi di storia, è vergognoso restare a guardare.<br>意大利语原文｜在别人创造历史的时候袖手旁观是可耻的，输赢并不重要。</div>`},
+            {min:75,max:80,name:"戈林｜纳粹空军元帅",img:"https://pic.qqtn.com/up/2021-7/16257944028387225.jpg",word:"野心与奢靡并行，亲手葬送德国空军。"},
+            {min:81,max:85,name:"隆美尔｜沙漠之狐",img:"https://pic.qqtn.com/up/2021-4/16178859228417446.jpg",word:"战术无双，政治无力，是军人也是囚徒。"},
+            {min:86,max:90,name:"曼施坦因｜东线战略大师",img:"https://pic.qqtn.com/up/2020-12/16081523088337229.jpg",word:"第三帝国最顶尖战略家，却无法逆转国运。"},
+            {min:91,max:95,name:"戴高乐｜自由法国领袖",img:"https://pic.qqtn.com/up/2021-5/16213337028427440.jpg",word:"国破山河在，傲骨永不屈服。"},
+            {min:96,max:100,name:"斯大林｜东线统帅",img:"https://pic.qqtn.com/up/2021-6/16240643228397224.jpg",word:"以血铸墙，以国为赌，赢下最残酷的卫国战争。"}
+        ];
+
+        // 渲染题目
+        let quizDom = document.getElementById("quiz");
+        function renderQuiz(){
+            quizDom.innerHTML = "";
+            questions.forEach((item,idx)=>{
+                let html = '<div class="q-item"><div class="q-title">'+item.q+'</div>';
+                item.opt.forEach(o=>{
+                    html += '<div class="opt"><label><input type="radio" name="q'+idx+'" value="'+o[0]+'"> '+o+'</label></div>';
+                });
+                html += '</div>';
+                quizDom.innerHTML += html;
+            });
+        }
+        renderQuiz();
+
+        // 提交计分
+        function getScore(){
+            let score = 0;
+            let errorArr = [];
+            for(let i=0;i<questions.length;i++){
+                let sel = document.querySelector('input[name="q'+i+'"]:checked');
+                if(sel && sel.value === questions[i].ans){
+                    score += 5;
+                }else{
+                    errorArr.push({
+                        q:questions[i].q,
+                        user:sel?sel.value:"未作答",
+                        right:questions[i].ans,
+                        desc:questions[i].desc
+                    });
+                }
+            }
+            document.getElementById("scoreNum").innerText = score;
+            document.getElementById("result").style.display = "block";
+
+            // 匹配段位
+            let res = rankList[0];
+            for(let r of rankList){
+                if(score >= r.min && score <= r.max) res = r;
+            }
+            document.getElementById("avatarBox").innerHTML = '<img src="'+res.img+'" alt="人物立绘">';
+            document.getElementById("charName").innerText = res.name;
+            document.getElementById("charQuote").innerHTML = res.word;
+
+            // 错题解析
+            let errorHtml = "";
+            if(errorArr.length === 0){
+                errorHtml += '<div class="error-item ans-right">🎉 满分通关，你是二战硬核历史专家！</div>';
+            }else{
+                errorArr.forEach(item=>{
+                    errorHtml += `<div class="error-item">
+                        <div>${item.q}</div>
+                        <div class="ans-wrong">你的答案：${item.user}</div>
+                        <div class="ans-right">正确答案：${item.right}</div>
+                        <div class="explain">解析：${item.desc}</div>
+                    </div>`;
+                });
+            }
+            document.getElementById("errorList").innerHTML = errorHtml;
+            window.scrollTo(0,document.body.scrollHeight);
+        }
+
+        // 重新答题 重置全部
+        function resetAll(){
+            renderQuiz();
+            document.getElementById("result").style.display = "none";
+            window.scrollTo(0,0);
+        }
+
+        // 关闭加载动画
+        window.onload = function(){
+            setTimeout(()=>{
+                document.getElementById("loading").classList.add("hide");
+            },500);
+        };
+    </script>
+</body>
+</html>
